@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>613 | Underground Jewish Pride</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        body.entry-active {
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Entry Gate Styles */
+        .entry-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .entry-gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .entry-question {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+        }
+
+        .entry-question h2 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .answer-options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .answer-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            letter-spacing: 1px;
+        }
+
+        .answer-btn:hover {
+            background: #111;
+            border-color: #666;
+        }
+
+        .answer-btn.correct {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        .answer-btn.incorrect {
+            background: #333;
+            border-color: #666;
+            opacity: 0.5;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .timer {
+            background: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .timer.warning {
+            background: #cc5500;
+            animation: pulse 1s infinite;
+        }
+
+        .attempts {
+            background: #111;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .access-denied {
+            text-align: center;
+            color: #cc5500;
+            font-size: 1.2rem;
+            margin-top: 2rem;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Main Site Styles */
+        .main-site {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease, visibility 1s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-site.visible {
+            opacity: 1;
+            visibility: visible;
+            position: static;
+            height: auto;
+            overflow: visible;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid #111;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ccc;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(45deg, #000 0%, #111 100%);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 100;
+            margin-bottom: 1rem;
+            letter-spacing: 8px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            opacity: 0.7;
+            margin-bottom: 3rem;
+        }
+
+        .maaser-badge {
+            background: #fff;
+            color: #000;
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+        }
+
+        .cta-btn {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 1rem 3rem;
+            font-family: inherit;
+            font-weight: 500;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Shop Section */
+        .shop {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 100;
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: 4px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: #111;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 2rem;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 1rem;
+            font-family: inherit;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* About Section */
+        .about {
+            padding: 5rem 2rem;
+            background: #111;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Community Section */
+        .community {
+            padding: 5rem 2rem;
+        }
+
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .community-card {
+            background: #111;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .community-location {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .community-quote {
+            font-style: italic;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background: #000;
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid #111;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .copyright {
+            opacity: 0.5;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+                letter-spacing: 4px;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Entry Gate -->
+    <div class="entry-gate" id="entryGate">
+        <div class="entry-question">
+            <h2>Welcome to the Community</h2>
+            <div class="quiz-info">
+                <div class="timer" id="timer">Time: 10s</div>
+                <div class="attempts" id="attempts">Attempts: 3/3</div>
+            </div>
+            <p class="question-text" id="questionText">What do Jews eat on Purim?</p>
+            <div class="answer-options" id="answerOptions">
+                <button class="answer-btn" data-correct="false">Challah</button>
+                <button class="answer-btn" data-correct="false">Matzah</button>
+                <button class="answer-btn" data-correct="false">Gefilte Fish</button>
+                <button class="answer-btn" data-correct="true">Hamantaschen</button>
+            </div>
+            <div class="access-denied" id="accessDenied" style="display: none;">
+                Access denied. Please try again later.
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Site -->
+    <div class="main-site" id="mainSite">
+        <header>
+            <nav>
+                <div class="logo">613</div>
+                <ul class="nav-links">
+                    <li><a href="#shop">Shop</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#community">Community</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>613</h1>
+            <p class="subtitle">Underground Jewish Pride</p>
+            <div class="maaser-badge">Always 10% off – Ma'aser</div>
+            <button class="cta-btn" onclick="document.getElementById('shop').scrollIntoView()">Enter Shop</button>
+        </section>
+
+        <!-- About Section -->
+        <section class="about" id="about">
+            <div class="about-content">
+                <h2 class="section-title">Underground Jewish Pride</h2>
+                <p>We are 0.2% of the world, but 100% of ourselves.</p>
+                <p>613 exists for those who understand. For Jews who want to wear their identity with pride, but without explanation. Our designs speak to those who know – subtle, coded, meaningful.</p>
+                <p>Ma'aser means giving 10% back. Instead of asking you to give, we give to you. Or choose no discount—we'll double the play, and 20% goes to Holocaust survivors. Because community comes first, and looking good shouldn't cost everything.</p>
+                <p>From Brooklyn to Tel Aviv, from London to São Paulo – we are a global tribe, wandering but never lost.</p>
+                <p>This is chosen-wear for the chosen-ish. Pride without preaching. Identity without apology.</p>
+            </div>
+        </section>
+
+        <!-- Shop Section -->
+        <section class="shop" id="shop">
+            <h2 class="section-title">Welcome to the Community</h2>
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <img src="images/613-tshirt.jpg" alt="613 T-shirt" class="product-image">
+                    <h3 class="product-title">"613" Tee</h3>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <img src="images/02percent-tshirt.jpg" alt="0.2% T-shirt" class="product-image">
+                    <h3 class="product-title">"0.2%" Tee</h3>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <img src="images/oy-tshirt.png" alt="oy. T-shirt" class="product-image">
+                    <h3 class="product-title">"oy." Tee</h3>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <img src="images/global-tribe-tshirt.jpg" alt="global tribe T-shirt" class="product-image">
+                    <h3 class="product-title">"global tribe" Tee</h3>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="product-card">
+                    <img src="images/bagel-donut-tshirt.png" alt="Bagel>Donut T-shirt" class="product-image">
+                    <h3 class="product-title">"Bagel>Donut" Tee</h3>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="product-card">
+                    <img src="images/i-know-a-guy-tshirt.jpg" alt="I Know A Guy T-shirt" class="product-image">
+                    <h3 class="product-title">"I Know A Guy" Tee</h3>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community Section -->
+        <section class="community" id="community">
+            <h2 class="section-title">Global Tribe</h2>
+            <div class="community-grid">
+                <div class="community-card">
+                    <div class="community-location">Brooklyn, NY</div>
+                    <p class="community-quote">"Finally, a way to rep my heritage that doesn't scream tourist."</p>
+                </div>
+                <div class="community-card">
+                    <div class="community-location">Tel Aviv, Israel</div>
+                    <p class="community-quote">"The '0.2%' shirt starts conversations everywhere I go."</p>
+                </div>
+                <div class="community-card">
+                    <div class="community-location">London, UK</div>
+                    <p class="community-quote">"Wore 'oy.' to work. Only my Jewish colleagues got it. Perfect."</p>
+                </div>
+                <div class="community-card">
+                    <div class="community-location">Toronto, Canada</div>
+                    <p class="community-quote">"'chosen-ish' is the most accurate description of how I feel."</p>
+                </div>
+                <div class="community-card">
+                    <div class="community-location">São Paulo, Brazil</div>
+                    <p class="community-quote">"Finally found my tribe through a t-shirt. Ma'aser pricing is genius."</p>
+                </div>
+                <div class="community-card">
+                    <div class="community-location">Melbourne, Australia</div>
+                    <p class="community-quote">"'Since Sinai' gets nods from Jews and confused looks from everyone else. Love it."</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                    <a href="#shipping">Shipping</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <p class="copyright">© 2024 613. Underground Jewish Chosen-Wear. Always 10% off – ma'aser.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Enhanced Entry Gate Quiz System
+        document.addEventListener('DOMContentLoaded', function() {
+            const entryGate = document.getElementById('entryGate');
+            const mainSite = document.getElementById('mainSite');
+            const questionText = document.getElementById('questionText');
+            const answerOptions = document.getElementById('answerOptions');
+            const timerDisplay = document.getElementById('timer');
+            const attemptsDisplay = document.getElementById('attempts');
+            const accessDenied = document.getElementById('accessDenied');
+            
+            // Initially prevent scrolling
+            document.body.classList.add('entry-active');
+
+            // Quiz state
+            let currentQuestionIndex = 0;
+            let attemptsRemaining = 3;
+            let timeRemaining = 10;
+            let timerInterval = null;
+            let isAnswering = false;
+
+            // Question pool - includes original Purim question plus new ones
+            const questions = [
+                {
+                    question: "What do Jews eat on Purim?",
+                    options: ["Challah", "Matzah", "Gefilte Fish", "Hamantaschen"],
+                    correctIndex: 3
+                },
+                {
+                    question: "What is the first letter of the Hebrew alphabet?",
+                    options: ["Bet", "Aleph", "Gimel", "Dalet"],
+                    correctIndex: 1
+                },
+                {
+                    question: "During Kiddush, what is traditionally done?",
+                    options: ["Light candles", "Say a blessing over wine", "Appreciate what you have / give thanks 🙏", "Give charity"],
+                    correctIndex: 1
+                },
+                {
+                    question: "What is traditionally done on Yom Kippur?",
+                    options: ["Eat a festive meal", "Fast and pray", "Spin a dreidel", "You eat dairy and pray 🥛"],
+                    correctIndex: 1
+                },
+                {
+                    question: "Which holiday is known as the Festival of Lights?",
+                    options: ["Passover", "Hanukkah", "Purim", "Yom Kippur"],
+                    correctIndex: 1
+                },
+                {
+                    question: "Which food is traditionally eaten during Passover?",
+                    options: ["Challah", "Matzah", "Latkes", "Bagel"],
+                    correctIndex: 1
+                },
+                {
+                    question: "What food is traditionally eaten on Shavuot?",
+                    options: ["Dairy products", "Meat stew", "Latkes", "Hamantaschen"],
+                    correctIndex: 0
+                }
+            ];
+
+            function updateAttemptsDisplay() {
+                attemptsDisplay.textContent = `Attempts: ${attemptsRemaining}/3`;
+            }
+
+            function updateTimerDisplay() {
+                timerDisplay.textContent = `Time: ${timeRemaining}s`;
+                if (timeRemaining <= 3) {
+                    timerDisplay.classList.add('warning');
+                } else {
+                    timerDisplay.classList.remove('warning');
+                }
+            }
+
+            function startTimer() {
+                timeRemaining = 10;
+                updateTimerDisplay();
+                
+                timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    updateTimerDisplay();
+                    
+                    if (timeRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        handleIncorrectAnswer();
+                    }
+                }, 1000);
+            }
+
+            function stopTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }
+
+            function getRandomQuestion() {
+                return questions[Math.floor(Math.random() * questions.length)];
+            }
+
+            function displayQuestion() {
+                if (attemptsRemaining <= 0) {
+                    showAccessDenied();
+                    return;
+                }
+
+                const question = getRandomQuestion();
+                questionText.textContent = question.question;
+                
+                // Clear previous options
+                answerOptions.innerHTML = '';
+                
+                // Create new option buttons
+                question.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'answer-btn';
+                    button.textContent = option;
+                    button.setAttribute('data-correct', index === question.correctIndex ? 'true' : 'false');
+                    answerOptions.appendChild(button);
+                });
+
+                // Add event listeners to new buttons
+                attachAnswerListeners();
+                
+                // Start timer
+                isAnswering = false;
+                startTimer();
+            }
+
+            function attachAnswerListeners() {
+                const answerBtns = answerOptions.querySelectorAll('.answer-btn');
+                answerBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if (isAnswering) return; // Prevent multiple clicks
+                        isAnswering = true;
+                        
+                        stopTimer();
+                        const isCorrect = this.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            this.classList.add('correct');
+                            setTimeout(() => {
+                                entryGate.classList.add('hidden');
+                                mainSite.classList.add('visible');
+                                document.body.classList.remove('entry-active');
+                            }, 1000);
+                        } else {
+                            this.classList.add('incorrect');
+                            setTimeout(() => {
+                                handleIncorrectAnswer();
+                            }, 1000);
+                        }
+                    });
+                });
+            }
+
+            function handleIncorrectAnswer() {
+                attemptsRemaining--;
+                updateAttemptsDisplay();
+                
+                if (attemptsRemaining > 0) {
+                    // Show new question after delay
+                    setTimeout(() => {
+                        displayQuestion();
+                    }, 500);
+                } else {
+                    showAccessDenied();
+                }
+            }
+
+            function showAccessDenied() {
+                stopTimer();
+                answerOptions.style.display = 'none';
+                timerDisplay.style.display = 'none';
+                attemptsDisplay.style.display = 'none';
+                questionText.style.display = 'none';
+                document.querySelector('.entry-question h2').style.display = 'none'; // Hide welcome message
+                accessDenied.style.display = 'block';
+            }
+
+            // Initialize the quiz
+            updateAttemptsDisplay();
+            displayQuestion();
+
+            // Add to cart functionality (placeholder)
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productTitle = this.parentElement.querySelector('.product-title').textContent;
+                    alert(`Added ${productTitle} to cart!`);
+                });
+            });
+
+            // Smooth scrolling for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
